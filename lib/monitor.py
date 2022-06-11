@@ -1,36 +1,11 @@
 #! /usr/bin/env python3
 
-import smtplib
 import requests
 import socket
+import mysql.connector
+from lib import emailer
 from decouple import config
 
-"""
-Class Emailer:
-
-This class is a short wrapper for smtplib
-email clients. We adjusted it for our purposes.
-It is not generalized.
-"""
-class Emailer:
-    def __init__(self, sender, secret):
-        self._sender = sender
-        self._secret = secret
-    
-    def sendEmail(self, status, content, receiver):
-        body = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(self._sender, receiver, status, content)
-
-        print(f"{self._sender} -> {receiver}: [{status}] {content}")
-
-        try:
-            mail = smtplib.SMTP(config('SMTP_SERVER'), config('SMTP_PORT'))
-            mail.ehlo()
-            mail.starttls()
-            mail.login(self._sender, self._secret)
-            mail.sendmail(self._sender, receiver, body)
-            mail.close()
-        except Exception as err:
-            print(f"Error! Could not send email: {err}")
 
 """
 Class Monitor:
@@ -52,9 +27,9 @@ class Monitor:
     def frontend_checker(self):
         # this subroutine tries to connect to one of
         # our web pages
-        sess = requests.Session()
-        addr = self.findHostByLabel("Frontend")
         try:
+            sess = requests.Session()
+            addr = self.findHostByLabel("Frontend")
             r = sess.get(addr)
             return "Maintenance" not in r.text
         except Exception as err:
@@ -65,8 +40,8 @@ class Monitor:
         # only check if the server
         # does still respond to sockets. If not: we assume that
         # the server has run into internal errors.
-        ip = self.findHostByLabel("Backend")
         try:
+            ip = self.findHostByLabel("Backend")
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
             location = (ip, 22)
             r = s.connect_ex(location)
@@ -78,10 +53,10 @@ class Monitor:
     def mc_checker(self, index):
         # uses the mcsrvstat.us api v2 and checks
         # for the only state
-        hostname = self.getHostName(index)
-        label = self.getLabel(index)
-        sess = requests.Session()
         try:
+            hostname = self.getHostName(index)
+            label = self.getLabel(index)
+            sess = requests.Session()
             r = sess.get(f"https://api.mcsrvstat.us/2/{hostname}")
             return '"online":false' not in r.text
         except Exception as err:
@@ -91,10 +66,10 @@ class Monitor:
     def ts_checker(self, index):
         # uses the cleanvoice.ru api, queries the hostname
         # and checks for errors. If no error occurs: server is offline
-        hostname = self.getHostName(index)
-        label = self.getLabel(index)
-        sess = requests.Session()
         try:
+            hostname = self.getHostName(index)
+            label = self.getLabel(index)
+            sess = requests.Session()
             r = sess.get(f"https://api.cleanvoice.ru/ts3/?address={hostname}&ext=false")
             return '"error"' not in r.text
         except Exception as err:
@@ -102,8 +77,22 @@ class Monitor:
             return False
 
     def db_checker(self):
-        # TODO
-        pass
+        # just try to connect to the server with correct
+        # credentials, but do not expect to be successful,
+        # just check if there's a timeout error (connection_timeout = 0.5s)
+        # or a general connection error
+        # (then, the server's offline or address unresolveable)
+        try:
+            mysql.connector.connect(
+                host=config('SQL_HOST'),
+                user=config('SQL_USER'),
+                password=config('SQL_PASS'),
+                connection_timeout=0.5
+            )
+        except Exception as err:
+            error = f"{err}"
+            if "(timed out)" not in error: self.errCollection["Database"] = err
+            return "(timed out)" in error
 
     def smtp_checker(self):
         # TODO
@@ -123,14 +112,14 @@ class Monitor:
         try:
             return self.hostnames[index]['hostname']
         except KeyError as err:
-            print(f"Error! {err}")
+            Exception(err)
 
 
     def getLabel(self, index):
         try:
             return self.hostnames[index]['label']
         except KeyError as err:
-            print(f"Error! {err}")
+            Exception(err)
 
     def findHostByLabel(self, label):
         for i in range(len(self.hostnames)):
@@ -147,17 +136,16 @@ class Monitor:
                 Exception("No label could be found")
 
     def runAll(self):
-        # Initialize mail client
-        mailClient = Emailer(config('SENDER'), config('SECRET'))
-
         # Run tests
         try: 
+            # Initialize mail client
+            mailClient = emailer.Emailer(config('SENDER'), config('SECRET'))
             mailClient.sendEmail("UP" if self.frontend_checker() == True else "DOWN", self.getMessage('Frontend'), self.components['Frontend'])
             mailClient.sendEmail("UP" if self.backend_checker() == True else "DOWN", self.getMessage('Backend'), self.components['Backend'])
             mailClient.sendEmail("UP" if self.mc_checker(0) == True else "DOWN", self.getMessage('Minecraft-001'), self.components['Minecraft-001'])
             mailClient.sendEmail("UP" if self.mc_checker(1) == True else "DOWN", self.getMessage('Minecraft-002'), self.components['Minecraft-002'])
             mailClient.sendEmail("UP" if self.ts_checker(2) == True else "DOWN", self.getMessage('Teamspeak-001'), self.components['Teamspeak-001'])
-            # mailClient.sendEmail("UP" if self.db_checker() == True else "DOWN", self.getMessage('Database'), self.components['Database'])
+            mailClient.sendEmail("UP" if self.db_checker() == True else "DOWN", self.getMessage('Database'), self.components['Database'])
             # mailClient.sendEmail("UP" if self.smtp_checker() == True else "DOWN", self.getMessage('External SMTP'), self.components['External SMTP'])
             # mailClient.sendEmail("UP" if self.dns_checker(3) == True else "DOWN", self.getMessage('External DNS 1'), self.components['External DNS 1'])
             # mailClient.sendEmail("UP" if self.dns_checker(4) == True else "DOWN", self.getMessage('External DNS 2'), self.components['External DNS 2'])
