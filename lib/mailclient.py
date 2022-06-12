@@ -2,6 +2,8 @@
 
 import smtplib
 from decouple import config
+from colorama import Fore
+from colorama import Style 
 
 """
 Class Emailer:
@@ -14,22 +16,20 @@ class Emailer:
     def __init__(self, sender, secret):
         self._sender = sender
         self._secret = secret
-        try:
-            self._smtp =  smtplib.SMTP(config('SMTP_SERVER'), config('SMTP_PORT'))
-        except Exception as err:
-            Exception(err)
+        self.error = 0
     
     def sendEmail(self, status, content, receiver):
         body = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(self._sender, receiver, status, content)
 
-        print(f"{self._sender} -> {receiver}: [{status}] {content}")
+        print(f"{self._sender} -> {receiver}: [{Fore.GREEN if status == 'UP' else Fore.RED}{status}{Style.RESET_ALL}] {content}")
 
         try:
-            mail = self._smtp
-            mail.ehlo()
-            mail.starttls()
-            mail.login(self._sender, self._secret)
-            mail.sendmail(self._sender, receiver, body)
-            mail.close()
+            smtp = smtplib.SMTP(config('SMTP_SERVER'), config('SMTP_PORT'))
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(self._sender, self._secret)
+            smtp.sendmail(self._sender, receiver, body)
+            smtp.close()
         except Exception as err:
+            self.error = 1
             Exception(err)
