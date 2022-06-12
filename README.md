@@ -31,9 +31,7 @@ sudo apt-get update && #apt-get upgrade
 sudo nano /etc/crontab 
 
 # Syntax:
-# * * * * * /path/to/command arg1 arg2
-# OR
-# * * * * * /root/backup.sh
+# * * * * * /path/to/monitor/app.py [options] 
 ```
 
 ## Output
