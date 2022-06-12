@@ -1,10 +1,12 @@
 # Nani Monitoring
-Small monitoring script in python for nani-games
+Small monitoring script in python for nani-games using statuspage.io automation email routes
 
 ## Installation
 ```bash
 git clone https://github.com/david-prv/nani-monitoring.git monitor && cd monitor
 pip install -r requirements.txt
+cp example.env .env
+rm -r example.env
 ```
 
 ## Commandline Args
