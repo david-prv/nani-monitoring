@@ -20,7 +20,9 @@ def runDaemon():
     runner = monitor.Monitor(collections.COMPONENTS, collections.HOSTNAMES, options)
     while(True):
         runner.runAll()
-        if options.repetitive: time.sleep(int(config('DELAY')))
+        if options.repetitive:
+            if (options.turnus == None): time.sleep(int(config('DELAY')))
+            else: time.sleep(options.turnus)
         else: exit("Done.")
 
 if __name__ == "__main__":
