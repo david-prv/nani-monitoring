@@ -7,7 +7,6 @@ from lib import mailclient
 from lib import ping
 from decouple import config
 
-
 """
 Class Monitor:
 
