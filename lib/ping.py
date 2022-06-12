@@ -4,7 +4,7 @@ import platform
 import subprocess
 
 # source: https://stackoverflow.com/questions/2953462/pinging-servers-in-python
-def ping(host):
+def ping(host) -> bool:
     """
     Returns True if host (str) responds to a ping request.
     Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
