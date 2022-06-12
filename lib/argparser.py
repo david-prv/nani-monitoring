@@ -12,19 +12,24 @@ Options:
     - ScriptName:       Changes with the actual filename. Standard is
                         path/to/file/app.py, which cannot be changed with commands
 
-    - Repetitive:        Decides whether the monitor should run over and
+    - Repetitive:       Decides whether the monitor should run over and
                         over again, or stop after one iteration. Can be enabled
                         with --repetitive or -r
 
     - SuppressEmails:   Option to prevents emails to be sent. Useful
                         for development environments. Can be enabled with
                         --suppress-emails or -s
+
+    - Turnus:           If repetitive mode is enabled, you can specifiy the turnus
+                        in seconds by using --turnus <seconds> or -t <seconds> as
+                        commandline argument. It will override the environment variable            
 """
 class Argparser:
     def __init__(self):
         self.scriptName = ""
         self.repetitive = False
         self.suppressEmails = False
+        self.turnus = None
 
     def parse(self):
         self.scriptName = sys.argv[0]
@@ -39,3 +44,10 @@ class Argparser:
             # suppress emails
             if cmd == "--suppress-emails" or cmd == "-s":
                 self.suppressEmails = True
+
+            # override turnus
+            if cmd == "--turnus" or cmd == "-t":
+                seconds = int(sys.argv[i+1])
+                self.turnus = seconds
+                i += 1
+
