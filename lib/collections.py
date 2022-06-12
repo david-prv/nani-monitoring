@@ -3,9 +3,9 @@
 from decouple import config
 
 """
-COMPONENTS:
+COLLECTIONS:
 
-Enumeration of all available components and their
+Enumerations of all available components, hostnames and their
 corresponding statuspage.io email addresses goes here
 """
 
