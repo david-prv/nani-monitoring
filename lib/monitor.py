@@ -19,7 +19,8 @@ be running or not.
 Can be seen as a collection of blackbox unit tests.
 """
 class Monitor:
-    def __init__(self, components, hostnames):
+    def __init__(self, components, hostnames, options):
+        self.options = options
         self.components = components
         self.hostnames = hostnames
         self.errCollection = {}
@@ -145,7 +146,7 @@ class Monitor:
     def runAll(self) -> None:
         # Run tests
         try: 
-            mailClient = mailclient.Emailer(config('SENDER'), config('SECRET'))
+            mailClient = mailclient.Emailer(config('SENDER'), config('SECRET'), self.options.suppressEmails)
             if self.smtp_checker(mailClient): mailClient.sendEmail("UP", self.getMessage('External SMTP'), self.components['External SMTP'])
             else: Exception("Could not establish SMTP connection!")
             mailClient.sendEmail("UP" if self.frontend_checker() == True else "DOWN", self.getMessage('Frontend'), self.components['Frontend'])
