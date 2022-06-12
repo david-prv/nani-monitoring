@@ -23,6 +23,9 @@ nano .env
 
 > ``--turnus <seconds>`` or ``-t <seconds>``:  
 > Specifiy turnus in seconds, if repetitive mode is enabled (overrides env variable)
+  
+> ``--help`` or ``-h`` (Alias: ``--manual`` or ``-m``):  
+> Shows script usage and quits
 
 ## Run the Script
 ```bash
@@ -44,5 +47,17 @@ sudo nano /etc/crontab
 # * * * * * /path/to/monitor/app.py [options] 
 ```
 
-## Output
-![image](https://user-images.githubusercontent.com/66866223/173231420-4565f77b-7665-42af-b16a-66b7f20643cf.png)
+## Screenshots
+<details>
+  <summary>Help message / Manual</summary>
+  ![image](https://user-images.githubusercontent.com/66866223/173252187-30fea965-08b9-4e43-9c2b-456d841ce59c.png)
+</details>
+<details>
+  <summary>Coloured activity log</summary>
+  ![image](https://user-images.githubusercontent.com/66866223/173231420-4565f77b-7665-42af-b16a-66b7f20643cf.png)
+</details>
+<details>
+  <summary>Suppressed activitiy log</summary>
+  ![image](https://user-images.githubusercontent.com/66866223/173252249-11aaeb0c-7d11-4392-b9a2-5c17beaeb10c.png)
+</details>
+
