@@ -22,7 +22,9 @@ Options:
 
     - Turnus:           If repetitive mode is enabled, you can specifiy the turnus
                         in seconds by using --turnus <seconds> or -t <seconds> as
-                        commandline argument. It will override the environment variable            
+                        commandline argument. It will override the environment variable      
+
+    - Help / Manual:    Shows manual page for this script. Use --help, -h or --manual, -m      
 """
 class Argparser:
     def __init__(self):
@@ -30,6 +32,18 @@ class Argparser:
         self.repetitive = False
         self.suppressEmails = False
         self.turnus = None
+
+    def manual(self):
+        print('''
+        Usage: app.py [options]
+        
+        Options:
+            --repetitive, -t        Enable repetitive mode
+            --suppress-emails, -s   Suppresses update emails to be sent
+            --turnus <s>, -t <s>    Overrides turnus in seconds
+            --help, -h              Shows this message and quits
+        ''')
+        exit()
 
     def parse(self):
         self.scriptName = sys.argv[0]
@@ -45,9 +59,16 @@ class Argparser:
             if cmd == "--suppress-emails" or cmd == "-s":
                 self.suppressEmails = True
 
+            if (cmd == "--help" or cmd == "-h" or
+                cmd == "--manual" or cmd == "-m"):
+                self.manual()
+
             # override turnus
             if cmd == "--turnus" or cmd == "-t":
-                seconds = int(sys.argv[i+1])
-                self.turnus = seconds
-                i += 1
+                if i+1 <= (len(sys.argv) - 1):
+                    seconds = int(sys.argv[i+1])
+                    self.turnus = seconds
+                    i += 1
+                else:
+                    self.manual()
 
