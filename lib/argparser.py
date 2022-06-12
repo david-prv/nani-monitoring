@@ -31,7 +31,6 @@ class Argparser:
 
         for i in range(1, len(sys.argv)):
             cmd = sys.argv[i].lower()
-            print(cmd, i)
 
             # repetitive
             if cmd == "--repetitive" or cmd == "-r":
