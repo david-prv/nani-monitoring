@@ -6,7 +6,12 @@ Small monitoring script in python for nani-games using statuspage.io automation 
 git clone https://github.com/david-prv/nani-monitoring.git monitor && cd monitor
 pip install -r requirements.txt
 cp example.env .env
-rm -r example.env
+rm example.env
+```
+Open and edit ``.env``. Update environment variables with your credentials/routes/settings:
+```bash
+# for Ubuntu
+nano .env
 ```
 
 ## Commandline Args
