@@ -1,10 +1,13 @@
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.12
+colorama==0.4.4
 crypto==1.4.1
 cryptography==37.0.2
 idna==3.3
+mysql-connector-python==8.0.29
 Naked==0.1.31
+protobuf==4.21.1
 pycparser==2.21
 python-decouple==3.6
 PyYAML==6.0
