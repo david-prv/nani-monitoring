@@ -21,6 +21,9 @@ nano .env
 > ``--suppress-emails`` or ``-s``:  
 > Prevent update emails to be sent (useful for development)
 
+> ``--turnus <seconds>`` or ``-t <seconds>``:  
+> Specifiy turnus in seconds, if repetitive mode is enabled (overrides env variable)
+
 ## Run the Script
 ```bash
 # in path/to/monitor/
