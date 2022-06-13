@@ -40,13 +40,20 @@ screen -S monitor_runner python3 app.py -r
 or setting up a cronjob
 ```bash
 # for Ubuntu
-sudo apt-get update && #apt-get upgrade
+sudo apt-get update && apt-get upgrade
 sudo nano /etc/crontab 
 
 # Syntax:
 # * * * * * /path/to/monitor/app.py [options] 
 ```
-
+  
+## Test the Script
+We suggest using the following command to debug/test your installed version of this script:
+```bash
+python3 app.py -r -s -t 10 >> output
+cat output
+```
+  
 ## Screenshots
 <details>
   <summary>Help message / Manual</summary>
