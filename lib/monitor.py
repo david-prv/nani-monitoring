@@ -2,7 +2,6 @@
 
 import requests
 import socket
-import mysql.connector
 from lib import mailclient
 from lib import ping
 from decouple import config
@@ -76,22 +75,15 @@ class Monitor:
             return False
 
     def db_checker(self) -> bool:
-        # just try to connect to the server with correct
-        # credentials, but do not expect to be successful,
-        # just check if there's a timeout error (connection_timeout = 0.5s)
-        # or a general connection error
-        # (then, the server's offline or address unresolveable)
+        # the nani servers are configured in a way, that
+        # phpmyadmin is running simultaniously with our MySQL
+        # server instance. Thus, testing for phpmyadmin is sufficient
         try:
-            mysql.connector.connect(
-                host=config('SQL_HOST'),
-                user=config('SQL_USER'),
-                password=config('SQL_PASS'),
-                connection_timeout=0.5
-            )
+            r = self.session.get(config('PHPMYADMIN'))
+            return r.status_code == 200
         except Exception as err:
-            error = f"{err}"
-            if "(timed out)" not in error: self.errCollection["Database"] = err
-            return "(timed out)" in error
+            self.errCollection["Database"] = err
+            return False
 
     def smtp_checker(self, client) -> bool:
         # Checks for error stage in a SMTPLib
