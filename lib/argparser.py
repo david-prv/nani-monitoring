@@ -16,7 +16,7 @@ Options:
                         over again, or stop after one iteration. Can be enabled
                         with --repetitive or -r
 
-    - SuppressEmails:   Option to prevents emails to be sent. Useful
+    - SuppressEmails:   Option to prevent emails to be sent. Useful
                         for development environments. Can be enabled with
                         --suppress-emails or -s
 
@@ -54,10 +54,12 @@ class Argparser:
             # repetitive
             if cmd == "--repetitive" or cmd == "-r":
                 self.repetitive = True
+                continue
             
             # suppress emails
             if cmd == "--suppress-emails" or cmd == "-s":
                 self.suppressEmails = True
+                continue
 
             if (cmd == "--help" or cmd == "-h" or
                 cmd == "--manual" or cmd == "-m"):
@@ -66,9 +68,17 @@ class Argparser:
             # override turnus
             if cmd == "--turnus" or cmd == "-t":
                 if i+1 <= (len(sys.argv) - 1):
-                    seconds = int(sys.argv[i+1])
-                    self.turnus = seconds
-                    i += 1
+                    if not sys.argv[i+1].isnumeric():
+                        self.manual()
+                    else:
+                        seconds = int(sys.argv[i+1])
+                        self.turnus = seconds
+                        i += 1
+                        continue
                 else:
                     self.manual()
+
+            # catch all unknown
+            if not cmd.isnumeric():
+                self.manual()
 
